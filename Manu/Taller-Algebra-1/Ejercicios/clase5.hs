@@ -80,22 +80,50 @@ menorDivisorDesde n k | n `esDivisible` k = k
 
 menorDivisor2 n = menorDivisorDesde n 2
 
---- 2. Implementar la función esPrimo :: Integer -> Bool.
--- Si el menor de los divisores de p es = a p, => p es primo
+--- Ejercicio 2 ---
+-- Implementar la función esPrimo :: Integer -> Bool.
 -- esPrimo :: Integer -> Bool
 
+-- Si el menor de los divisores de p es = a p, => p es primo
+
 esPrimo :: Integer -> Bool
-esPrimo n = (menorDivisor n == n)
+esPrimo n = (menorDivisor2 n == n)
 
---- 3 Implementar la siguiente función (sumatoria doble)
+--- Ejercicio 3 ---
+-- Implementar la siguiente función (sumatoria doble)
 
-sumaA :: Integer -> Integer -> Integer -> Integer
-sumaA i j m | m == 1 = i 
-            | otherwise = i ^ m + sumaA i j (m - 1)
+sumaA :: Integer -> Integer -> Integer
+sumaA i m | m == 1 = i 
+          | m > 1 = i ^ m + sumaA i (m - 1)
             
-sumaB :: Integer -> Integer -> Integer -> Integer -> Integer
-sumaB i j n m | n == 1 = sumaA 1 j m
-              | otherwise = sumaA n j m + sumaB i j (n - 1) m
-
 sumaCompleta :: Integer -> Integer -> Integer
-sumaCompleta n m = sumaB 1 1 n m
+sumaCompleta n m | n == 1 = sumaA n m
+                 | n > 1 = sumaA n m + sumaCompleta (n - 1) m
+
+-- Bien, chequeado con wolfram
+
+--- Ejercicio 4 ---
+-- sumarPotencias
+
+sumarPotenciasAux :: Integer -> Integer -> Integer -> Integer
+sumarPotenciasAux q a m | m == 1 = q ^ (a + m)
+                        | m > 1 = q ^ (a + m) + sumarPotenciasAux q a (m - 1)
+
+sumarPotencias :: Integer -> Integer -> Integer -> Integer
+sumarPotencias q n m | n == 1 = sumarPotenciasAux q n m
+                     | n > 1 = sumarPotenciasAux q n m + sumarPotencias q (n - 1) m
+
+-- Bien, chequeado con wolfram
+
+--- Ejercicio 5 ---
+-- sumarRacionales
+
+sumarRacionalesAux :: Float -> Float -> Float
+sumarRacionalesAux p m | m == 1 = p/m
+                       | m > 1  = p/m + sumarRacionalesAux p (m - 1) 
+
+sumarRacionales :: Float -> Float -> Float
+sumarRacionales n m | n == 1 = sumarRacionalesAux n m
+                    | n > 1 = sumarRacionalesAux n m + sumarRacionales (n - 1) m
+
+-- Bien, chequeado con wolfram
