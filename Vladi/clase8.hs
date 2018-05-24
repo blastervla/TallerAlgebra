@@ -57,20 +57,58 @@ variaciones elementos n = agregarTodos elementos variacionAnterior
 
 insertarEn :: [Integer] -> Integer -> Integer -> [Integer]
 insertarEn lista n 1 = n:lista
-insertarEn (x:xs) n i = x:(insertarEn (x:xs) n (i - 1))
+insertarEn (x:xs) n i = x:(insertarEn (xs) n (i - 1))
 
 insertarEnTodas :: [[Integer]] -> Integer -> Integer -> [[Integer]]
 insertarEnTodas [] _ _ = []
-insertarEnTodas (x:xs) n i = (insertarEn x n i):(insertarEnTodas (xs) n i)
+insertarEnTodas (x:xs) n i = (insertarEn x n i):(insertarEnTodas xs n i)
 
 insertarNVeces :: [[Integer]] -> Integer -> Integer -> [[Integer]]
-insertarNVeces lista elemento n = insertarNVeces
+insertarNVeces _ _ 0 = []
+insertarNVeces lista elemento n = (insertarEnTodas lista elemento n)++(insertarNVeces lista elemento (n-1))
 
+-- permutaciones 1 = [[1]]
+-- permutaciones 2 = [[1,2], [2,1]]
+-- permutaciones 3 = [[1,2,3], [2,1,3], [1,3,2], [2,3,1], [3,1,2], [3,2,1]]
+-- permutaciones 4 = [[1,2,3,4], [2,1,3,4], [1,3,2,4], [2,3,1,4], [3,1,2,4], [3,2,1,4]]
+
+-- agrego n veces n en la primera posición de cada elemento de mi permutación anterior
+-- agrego n veces n en la segunda posición de cada elmento de mi permutación anterior
+-- ... (and so on)
+permutaciones :: Integer -> [[Integer]]
 permutaciones 1 = [[1]]
-permutaciones n = (agregarTodos n permutacionAnterior)
+permutaciones n = insertarNVeces permutacionAnterior n n
                 where permutacionAnterior = permutaciones (n - 1)
 
-permutaciones 1 = [[1]]
-permutaciones 2 = [[1,2], [2,1]]
-permutaciones 3 = [[1,2,3], [2,1,3], [1,3,2], [2,3,1], [3,1,2], [3,2,1]]
+crearNListasVacias :: Integer -> [[Integer]]
+crearNListasVacias 0 = []
+crearNListasVacias n = []:(crearNListasVacias (n-1))
+
+insertarHastaIndiceConcatenando :: [[Integer]] -> Integer -> Integer -> [[[Integer]]]
+insertarHastaIndiceConcatenando [x] elemento i = [[insertarEn x elemento i]]
+insertarHastaIndiceConcatenando (x:xs) elemento i = [(insertarEn x elemento i)]:(insertarHastaIndiceConcatenando xs elemento (i-1))
+
+nBolitasEnKCajas :: Integer -> Integer -> [[[Integer]]]
+nBolitasEnKCajas 0 k = [crearNListasVacias k]
+nBolitasEnKCajas n k = insertarHastaIndiceConcatenando elementoAnterior n n
+                    where elementoAnterior = head (nBolitasEnKCajas (n-1) k)
+
+    -- insertar en primera coordenada ++ insertar en segunda ++...hasta insertar en n
+
+insertarEnTodasNVeces :: [[[Integer]]] -> Integer -> Integer -> [[[Integer]]]
+insertarEnTodasNVeces [] _ _ = [[]]
+insertarEnTodasNVeces (x:xs) elemento i = (insertarEnTodas x elemento i):(insertarEnTodasNVeces xs elemento i)
+
+
+
+-- n = 0, k = 2 --> [ [ [],[] ] ]
+
+-- Para n = 1, tomo esta lista y le agrego 1 en el primer elemento (head) luego le agrego 1 en el segundo
+
+-- Para n = 2, tomo n=1 y tomo todos los elementos de la lista y les agrego el 2 en el primer indice. 
+-- Después hago lo mismo pero en el 2do indice
+
+-- n = 1, k = 2 --> [ [ [1],[] ],[ [],[1] ] ] agrego [1..n]
+-- n = 2, k = 2 --> [ [ [1,2],[] ],[ [],[1,2] ], [ [1],[2] ],[ [2],[1] ] ]
+-- n = 3, k = 2 -> [[[1,2,3][]],[[][1,2,3]], [[[1][2,3]],[[2,3][1]]], [[1,2][3]],[[3][1,2]], [[[1,3][2]],[[2][1,3]]]]
 
